@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Recognize Text</string>
+    <string name="please_wait_dialog">Please Wait</string>
+    <string name="pick_image_first_message">Pick Image First...!</string>
+    <string name="preparing_image_message">Preparing Image....</string>
+    <string name="recognize_txt">\"Recognizing text... \"</string>
+    <string name="sample_title_message">Sample Title</string>
+    <string name="sample_description_message">Sample Description</string>
+    <string name="cancelled_message">Cancelled....</string>
+    <string name="camera_permission"><![CDATA[Camera & Storage Permission are required...]]></string>
+    <string name="storage_permission">Storage permission is required..!</string>
+    <string name="camera_access">The app needs camera access to take photos.</string>
+    <string name="storage_access">The app needs storage access to take Images.</string>
+    <string-array name="target_languages">
+        <item>English</item>
+        <item>Spanish</item>
+        <item>German</item>
+        <item>French</item>
+    </string-array>
+</resources>
