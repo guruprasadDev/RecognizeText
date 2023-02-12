@@ -1,27 +1,22 @@
 package com.guru.recognizetext
 
-import android.app.Activity
-import android.content.ContentValues
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.guru.recognizetext.databinding.FragmentBottomSheetBinding
-import com.guru.recognizetext.utils.Constants
-import com.guru.recognizetext.utils.Constants.CAMERA_REQUEST_CODE
+import com.guru.recognizetext.helperclasses.ImageFileManager
 import com.guru.recognizetext.utils.Constants.IMAGE
-import com.guru.recognizetext.utils.Constants.STORAGE_REQUEST_CODE
-import com.guru.recognizetext.utils.showToast
 
 class ImagePickerBottomSheet(val onResult: (Uri) -> Unit) : BottomSheetDialogFragment() {
-
     private lateinit var binding: FragmentBottomSheetBinding
-
+    private lateinit var imageHelper: ImageFileManager
+    private lateinit var galleryActivityResultLauncher: ActivityResultLauncher<String>
+    private lateinit var cameraActivityResultsLauncher: ActivityResultLauncher<Uri>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,44 +25,48 @@ class ImagePickerBottomSheet(val onResult: (Uri) -> Unit) : BottomSheetDialogFra
     ): View {
         binding = FragmentBottomSheetBinding.inflate(inflater, container, false)
 
-        initListener()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        galleryActivityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
+                result?.let { uri ->
+                    onResult(uri)
+                    dismiss()
+                }
+            }
+
+        cameraActivityResultsLauncher =
+            registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccessfullyCaptured ->
+                if (isSuccessfullyCaptured) {
+                    onResult(imageHelper.imageUri)
+                    dismiss()
+                }
+            }
+
+        initListener()
+        imageHelper = ImageFileManager(requireContext()).also {
+            it.createTempFile()
+            it.generateImageUri()
+        }
+    }
+
     private fun initListener() {
-        // Set a click listener for the camera option
-        binding.cameraOption.setOnClickListener {
-            //pickImageCamera()
-            dismiss()
-        }
+        with(binding) {
+            cameraOption.setOnClickListener {
+                pickImageCamera()
+            }
 
-        // Set a click listener for the gallery option
-        binding.galleryOption.setOnClickListener {
-            pickImageGallery()
-        }
-    }
-
-
-    private fun pickImageGallery() {
-
-        galleryActivityResultLauncher.launch(IMAGE)
-    }
-
-    private val galleryActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
-            result?.let { uri ->
-                onResult(uri)
-                dismiss()
+            galleryOption.setOnClickListener {
+                pickImageFromGallery()
             }
         }
-//
-//
-//    private val cameraActivityResultsLauncher =
-//        registerForActivityResult(ActivityResultContracts.TakePicture()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                binding.imageIv.setImageURI(imageUri)
-//            } else {
-//                showToast(getString(R.string.cancelled_message))
-//            }
-//        }
+    }
+
+    private fun pickImageFromGallery() = galleryActivityResultLauncher.launch(IMAGE)
+
+    private fun pickImageCamera() = cameraActivityResultsLauncher.launch(imageHelper.imageUri)
 }
