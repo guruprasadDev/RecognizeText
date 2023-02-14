@@ -11,8 +11,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.guru.recognizetext.databinding.FragmentBottomSheetBinding
 import com.guru.recognizetext.utils.ImageFileManager
 import com.guru.recognizetext.utils.Constants.IMAGE
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ImagePickerBottomSheet(
     private val onResult: (Uri) -> Unit
 ) : BottomSheetDialogFragment() {
@@ -33,7 +35,6 @@ class ImagePickerBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity().application as TRApplication).appComponent.initDi(this)
         galleryActivityResultLauncher =
             registerForActivityResult(ActivityResultContracts.GetContent()) { result ->
                 result?.let { uri ->
@@ -65,7 +66,6 @@ class ImagePickerBottomSheet(
             }
         }
     }
-
 
     private fun pickImageFromGallery() = galleryActivityResultLauncher.launch(IMAGE)
 
