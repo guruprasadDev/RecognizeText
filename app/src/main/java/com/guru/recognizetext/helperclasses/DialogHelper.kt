@@ -5,9 +5,10 @@ import android.app.AlertDialog
 import android.content.Context
 import androidx.core.app.ActivityCompat
 import com.guru.recognizetext.R
+import javax.inject.Inject
 
-class DialogHelper(private val context: Context) {
-    lateinit var alertDialog: AlertDialog
+class DialogHelper @Inject constructor(private val context: Context) {
+     var alertDialog: AlertDialog
 
     init {
         val builder = AlertDialog.Builder(context)
