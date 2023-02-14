@@ -11,11 +11,14 @@ import com.guru.recognizetext.helperclasses.DialogHelper
 import com.guru.recognizetext.utils.Constants.CAMERA_REQUEST_CODE
 import com.guru.recognizetext.utils.Constants.STORAGE_REQUEST_CODE
 import com.guru.recognizetext.utils.showToast
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var imagePickerBottomSheet: ImagePickerBottomSheet
+    @Inject
     lateinit var dialogHelper: DialogHelper
     private var imageUri: Uri? = null
     @Inject
@@ -26,8 +29,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        (application as TRApplication).appComponent.initDi(this) // Inject dependencies
-        dialogHelper = DialogHelper(this)
         initListener()
         initBottomSheet()
     }
