@@ -5,34 +5,31 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.guru.recognizetext.databinding.ActivityMainBinding
 import com.guru.recognizetext.helperclasses.DialogHelper
-import com.guru.recognizetext.helperclasses.PermissionHelper
 import com.guru.recognizetext.utils.Constants.CAMERA_REQUEST_CODE
 import com.guru.recognizetext.utils.Constants.STORAGE_REQUEST_CODE
 import com.guru.recognizetext.utils.showToast
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var permissionHelper: PermissionHelper
-    private lateinit var dialogHelper: DialogHelper
-    private lateinit var textRecognizer: TextRecognizer
+    lateinit var imagePickerBottomSheet: ImagePickerBottomSheet
+    lateinit var dialogHelper: DialogHelper
     private var imageUri: Uri? = null
-    private lateinit var imagePickerBottomSheet: ImagePickerBottomSheet
+    @Inject
+    lateinit var textRecognizer: TextRecognizer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        (application as TRApplication).appComponent.initDi(this) // Inject dependencies
         dialogHelper = DialogHelper(this)
-        permissionHelper = PermissionHelper(this)
-        initBottomSheet()
         initListener()
-        initTextRecognizer()
+        initBottomSheet()
     }
 
     private fun initBottomSheet() {
@@ -54,10 +51,6 @@ class MainActivity : AppCompatActivity() {
         binding.imageIv.setOnClickListener {
             imagePickerBottomSheet.show(supportFragmentManager, imagePickerBottomSheet.tag)
         }
-    }
-
-    private fun initTextRecognizer() {
-        textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     }
 
     private fun recognizeTextFromImage() {
