@@ -11,6 +11,10 @@ import com.guru.recognizetext.helperclasses.DialogHelper
 import com.guru.recognizetext.utils.Constants.CAMERA_REQUEST_CODE
 import com.guru.recognizetext.utils.Constants.STORAGE_REQUEST_CODE
 import com.guru.recognizetext.utils.showToast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
@@ -40,11 +44,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
-        binding.textRecognizeBtn.setOnClickListener {
-            imageUri?.let {
-                recognizeTextFromImage()
-            } ?: run {
-                showToast(getString(R.string.pick_image_first_message))
+        binding.textRecognizeBtn.apply {
+            setOnClickListener {
+                isLoading = true
+                GlobalScope.launch {
+                    delay(3000)
+                    with(Dispatchers.Main) {
+                        isLoading = false
+                    }
+                }
+                imageUri?.let {
+                    recognizeTextFromImage()
+                } ?: run {
+                    showToast(getString(R.string.pick_image_first_message))
+                }
             }
         }
 
